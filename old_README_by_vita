@@ -1,0 +1,89 @@
+# XDRE
+
+PrBoom-Plus revision: 4519.
+
+## Known issues:
+1. XDRE crashes with some DeleteTicX values.
+
+## To do:
+1. Make header editor more useful (remove compatflags shit).
+2. Add longtics support in brute force.
+
+## Releases
+[+] — added, [-] — removed, [\*] — fixed/changed.
+
+### 2.22 (??.??.??)
+[\*] Updated prboom-plus to r4519.  
+[\*] Thing tracing now uses an array with pointers.  
+[\*] Made wxString::FromCDouble in MainWindow::OnSectorInput consistent.  
+[\*] Fixed segfaults after changing players and consoleplayer wasn't in  
+   the game.
+
+### 2.21 (23.02.17)
+[\*] Updated to SDL2.  
+[\*] Updated prboom-plus to r4514.  
+[+] Window (both wx and Doom) positions are now saved in xdre/xdre.ini.  
+[\*] Make text positions look better on wxGTK (Debian GNU/Linux, MATE).  
+[\*] Strafe value -128 is fine, remove the check in xdre::strafe().  
+[+] Added a dialog to set keys.  
+[+] Save savepoint mode in xdre/xdre.ini.  
+[\*] Fixed a crash when trying to use DeleteTic when tic list is empty.  
+[\*] The default savepoint mode is Start.
+
+### 2.20 (21.12.16)
+[+] Linedef, sector, thing indexes for tracing and angle type are now saved  
+   in xdre.ini.  
+[+] Added thing tracing. Although it's buggy, mobj->index == 0 is player 1.  
+[\*] Fixed a segfault on almost every Valiant map and Sunder maps 11 and 14.  
+[+] Added longtics in the header editor. Only with vanilla complevels.
+
+### 2.19 (25.11.16)
+[+] Added transposing (TransposeLeft and TransposeRight in xdre.ini).  
+   tr<mode> or ty<mode>, mode 0 changes turn and movement commands,  
+   1 changes only turns, 2 changes only moves.  
+[+] Added header editing.
+
+### 2.18 (18.11.16)
+[\*] Changed text positions so they look better on Windows 10  
+   (thanks to JCD for mentioning).  
+[\*] You can use TurnStep with short turns.  
+[\*] No more crash in co-op demos when adding tics (existed since 2.14).  
+[+] You can save demos with a footer (demo_extendedformat in the config).  
+   Obviously, with setting it to 0 demos with the footer will lose it  
+   after saving.
+
+### 2.17 (31.10.16)
+[+] Added longtics support. You can set longtics turn step with ts<value>,  
+   the command is called TurnStep in the config.  
+[+] Added sector tracing.  
+[\*] Updated PrBoom-Plus codebase to 2.5.1.4 release (r4459).  
+[+] Added -solo-net support.  
+[\*] Restored output to stdout and stderr (you can find out what's wrong).  
+[\*] Fixed advanced HUD.  
+[\*] Angle values are now unsigned shorts (that's what longtics allows).  
+ E. g. 0 is east, 16384 is north. You can enable degrees,  
+   unsigned chars or fine angles (0-8191) if you want, too.  
+[\*] "Direction moved" field now uses degrees  
+   (why would you want float with values from 0 to 65536?).  
+[\*] You can't use MB128/SL128 tics anymore.  
+[+] You can copy/delete tics multiple times with tc and tx. Deleting removes  
+   previous tics (e. g. you're on tic 7, then you type tx2, you're on tic 5).  
+   The commands are called CopyTicX and DeleteTicX in the config.  
+[\*] RNG uses wxDefaultValidator again instead of integer validator.  
+[+] Doom window now understands keypresses (you can press - or =, for example).
+
+### 2.16 (27.10.16)
+[+] You can trace more than one linedef.  
+[\*] Some UI changes.  
+[-] Removed Visual C references in the source (I don't really need them).
+
+### 2.15 (21.10.16)
+[*] Fixed crash at certain tics with ssp. (still crashes after 1M tics)
+
+### 2.14 modified (20.10.16)
+[\*] Fixed changing to SSG in Boom demos.  
+[+] Added Z position, added real separate speeds (X, Y and Z difference).  
+[\*] Savepoints limit raised to MAP100 maximum.  
+[\*] Vertex coordinates don't have .000000 anymore.  
+[\*] Fixed crash without ssp at tics 10, 20, 40, 80 etc, not with ssp.  
+[-] Removed Code::Blocks references.

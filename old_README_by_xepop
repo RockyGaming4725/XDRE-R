@@ -1,0 +1,40 @@
+xepop@outlook.com
+
+v2.14
+- fixed: didn't do savepoints sometimes and instead used old one in that slot
+
+v2.11
+- removed output to stdout and stderr that was introduced in 2.09 accidentally
+
+v2.09
+- actually really finally fixed: everything in bruteforce (it still sucks though)
+- fixed: crash on in bruteforce dialog on linux
+- fixed: major savegame desyncs in some maps
+
+v2.06, 25.8.2013
+- really fixed bruteforce use and damage
+
+v2.03, 23.8.2013
+- fixed bruteforce use
+
+
+Key config file:
+%appdata% for windows users
+$HOME/.xdre for linux users
+
+
+Known issues:
+- trying to shutdown xdre from "doom" window will fuck everything up; don't do that!
+- -128 looks like acceptable value for run and strafe, however it is not. I'm just lazy
+
+Savepoints:
+- User: You manage everything yourself.
+- Start: Saves on map start automatically, should be safe to use. You can also make your own savepoints
+- Auto: Saves automatically every now and then
+
+Bruteforce:
+- separator "," | e.g 50,49,48,47,25,-50,-7
+- range ":" | e.g 50:0,-25:-50
+- strafe: left-to-right (-50:50 = sl50...sr50, 50:-50 = sr50...sl50)
+- run: backward-to-forward
+- turn: right-to-left //do not ask me why, that's just how it is

@@ -1,0 +1,33 @@
+#build stuff
+w32/*
+w64/*
+gnu-linux/*
+
+src/prboom-plus/data/prboom-plus.wad
+src/xdre
+
+#autotools
+**/aclocal.m4*
+**/autom4te.cache*
+**/autotools/compile
+**/autotools/config.guess
+**/autotools/config.sub
+**/autotools/depcomp
+**/autotools/install-sh
+**/autotools/missing
+**/configure
+**/Makefile
+**/Makefile.in
+**/stamp-h1
+
+**/*.deps
+**/*.o
+**/*.a
+**/config.h*
+**/config.log
+**/config.status
+
+#prboom-plus stuff
+src/prboom-plus/data/rdatawad*
+src/prboom-plus/prboom.spec
+**/.svn*
