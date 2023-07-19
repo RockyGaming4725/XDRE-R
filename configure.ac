@@ -1,5 +1,5 @@
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT([XDRE],[2.22],[],[XDRE])
+AC_INIT([XDRE],[2.23],[],[XDRE])
 
 AC_CONFIG_HEADER(config.h)
 AC_CONFIG_AUX_DIR(autotools)

@@ -1,5 +1,5 @@
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT([PrBoom-Plus],[2.5.1.5 (XDRE 2.22)],[],[prboom-plus])
+AC_INIT([PrBoom-Plus],[2.5.1.5 (XDRE 2.23)],[],[prboom-plus])
 
 AC_CONFIG_HEADER(config.h)
 AC_CONFIG_AUX_DIR(autotools)
