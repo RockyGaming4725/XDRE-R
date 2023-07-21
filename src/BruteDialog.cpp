@@ -42,6 +42,7 @@
 #include <wx/valtext.h>
 #include <wx/msgdlg.h>
 #include <wx/tokenzr.h>
+#include <wx/app.h>
 
 //prevent more than 6 digits past decimal so coordinat brute forcing works
 class CustomFloatingPointValidator : public wxFloatingPointValidator<double>
@@ -93,8 +94,12 @@ wxDEFINE_EVENT(EVT_BRUTE_DONE, wxThreadEvent);
 BEGIN_EVENT_TABLE(BruteDialog,wxDialog)
 END_EVENT_TABLE()
 
-BruteDialog::BruteDialog(wxWindow* parent,wxWindowID id,const wxPoint& pos,const wxSize& size) {
-    wxDialog::Create(parent, wxID_ANY, _("Brute Force"));
+
+BruteDialog::BruteDialog(MainWindow* mainWindow, wxWindow* parent,wxWindowID id,const wxPoint& pos,const wxSize& size)
+    : wxDialog(parent, id, _("Brute Force"), pos, size), m_mainWindow(mainWindow) 
+
+{
+    //wxDialog::Create(parent, wxID_ANY, _("Brute Force")), m_mainWindow(mainWindow);
     SetClientSize(wxSize(426,400));
     SetMinSize(wxSize(426,396));
     SetMaxSize(wxSize(426,-1));
@@ -114,7 +119,7 @@ BruteDialog::BruteDialog(wxWindow* parent,wxWindowID id,const wxPoint& pos,const
     speedInput    = new wxTextCtrl(p, wxID_ANY, wxEmptyString, wxPoint(330,230), wxSize(80,21), wxTE_RIGHT, CustomFloatingPointValidator(6, valuePtr));
     //For Linedef Skip later:
     //wxTextCtrl* linedefInput;
-    linedefInput  = new wxTextCtrl(p, wxID_ANY, wxEmptyString, wxPoint(330,256), wxSize(80,21), wxTE_RIGHT, wxIntegerValidator<unsigned int>());
+    //linedefInput  = new wxTextCtrl(p, wxID_ANY, wxEmptyString, wxPoint(330,256), wxSize(80,21), wxTE_RIGHT, wxIntegerValidator<unsigned int>());
 
     StaticText1 = new wxStaticText(p, wxID_ANY, _("RNG"), wxPoint(180,50));
     rngCheckBox = new wxCheckBox(p, wxID_ANY, _(""), wxPoint(232,50), wxDefaultSize, wxALIGN_RIGHT);
@@ -193,16 +198,16 @@ BruteDialog::BruteDialog(wxWindow* parent,wxWindowID id,const wxPoint& pos,const
     speedChoice->Append(_("<="));
     speedChoice->Append(_("<"));
 
-    StaticText9 = new wxStaticText(p, wxID_ANY, _("Linedef"), wxPoint(180,258));
+    /*StaticText9 = new wxStaticText(p, wxID_ANY, _("Linedef"), wxPoint(180,258));
     //wxCheckBox* linedefCheckBox;
     linedefCheckBox = new wxCheckBox(p, wxID_ANY, _(""), wxPoint(232,258), wxDefaultSize, wxALIGN_RIGHT);
     linedefCheckBox->SetValue(false);
     linedefChoice = new wxChoice(p, wxID_ANY, wxPoint(258,256), wxSize(64,21), 0, 0, 0);
     linedefChoice->SetSelection(linedefChoice->Append(_("No")));
-    linedefChoice->Append(_("Yes"));
+    linedefChoice->Append(_("Yes"));*/
 
-    StaticText10 = new wxStaticText(p, wxID_ANY, _("Use"), wxPoint(180,284));
-    useCheckBox = new wxCheckBox(p, wxID_ANY, _(""), wxPoint(232,284), wxDefaultSize, wxALIGN_RIGHT);
+    StaticText10 = new wxStaticText(p, wxID_ANY, _("Use"), wxPoint(180,258));
+    useCheckBox = new wxCheckBox(p, wxID_ANY, _(""), wxPoint(232,258), wxDefaultSize, wxALIGN_RIGHT);
     useCheckBox->SetValue(false);
 
     bruteTicsBox    = new wxListBox(p, ID_BRUTETICSBOX, wxPoint(16,16), wxSize(140,100), 0, 0, 0);
@@ -233,26 +238,27 @@ BruteDialog::BruteDialog(wxWindow* parent,wxWindowID id,const wxPoint& pos,const
     cancel = new wxButton(p, ID_CANCEL, _("Cancel"), wxPoint(100,360), wxDefaultSize, 0, wxDefaultValidator);
     start  = new wxButton(p, ID_START, _("Start"), wxPoint(190,360), wxDefaultSize, 0, wxDefaultValidator);
     help   = new wxButton(p, ID_BRUTEHELP, _("Help"), wxPoint(8,360), wxDefaultSize, 0, wxDefaultValidator);
-    autoBruteRange = new wxButton(p, ID_AUTOBRUTERANGE, _("Auto Range"), wxPoint(172,316), wxDefaultSize, 0, wxDefaultValidator);
+    autoBruteRange = new wxButton(p, ID_AUTOBRUTERANGE, _("Auto Range"), wxPoint(280,360), wxDefaultSize, 0, wxDefaultValidator);
     workingText = new wxStaticText(p, wxID_ANY, _("Working..."), wxPoint(278,284), wxDefaultSize, 0);
     workingText->Hide();
     StaticBox1 = new wxStaticBox(p, wxID_ANY, _("Tics to brute force"), wxPoint(8,0), wxSize(156,354), 0);
-    StaticBox2 = new wxStaticBox(p, wxID_ANY, _("Checks"), wxPoint(172,6), wxSize(246,299), 0);
+    StaticBox2 = new wxStaticBox(p, wxID_ANY, _("Checks"), wxPoint(172,6), wxSize(246,275), 0);
+    StaticBox3 = new wxStaticBox(p, wxID_ANY, _("Auto range"), wxPoint(172,280), wxSize(246,74), 0);
     StaticText11 = new wxStaticText(p, wxID_ANY, _("On tic"), wxPoint(180,26), wxDefaultSize, 0);
     StaticText12 = new wxStaticText(p, wxID_ANY, _("Tic"), wxPoint(16,156), wxDefaultSize, 0);
     StaticText13 = new wxStaticText(p, wxID_ANY, _("Run"), wxPoint(16,204), wxDefaultSize, 0);
     StaticText14 = new wxStaticText(p, wxID_ANY, _("Strafe"), wxPoint(16,180), wxDefaultSize, 0);
 
-    StaticText15 = new wxStaticText(p, wxID_ANY, _("Automatic\nrange size:"), wxPoint(280,340), wxDefaultSize, 0);
-    rangeSizeChoice = new wxChoice(p, wxID_ANY, wxPoint(352,340), wxSize(68,21), 0, 0, 0);
+    StaticText15 = new wxStaticText(p, wxID_ANY, _("Range size:"), wxPoint(180,300), wxDefaultSize, 0);
+    rangeSizeChoice = new wxChoice(p, wxID_ANY, wxPoint(245,298), wxSize(50,21), 0, 0, 0);
     rangeSizeChoice->SetSelection(rangeSizeChoice->Append(_("1")));
     rangeSizeChoice->Append(_("3"));
     rangeSizeChoice->Append(_("2"));
     rangeSizeChoice->Append(_("4"));
     rangeSizeChoice->Append(_("5"));
-    rangeSizeChoice->Append(_("Max Range"));
-    StaticText16 = new wxStaticText(p, wxID_ANY, _("Avoid Turbo:"), wxPoint(280,316), wxDefaultSize, 0);
-    avoidTurboCheckbox = new wxCheckBox(p, wxID_ANY, _(""), wxPoint(356, 316), wxDefaultSize, wxALIGN_RIGHT);
+    rangeSizeChoice->Append(_("Max"));
+    StaticText16 = new wxStaticText(p, wxID_ANY, _("Avoid Turbo:"), wxPoint(180,328), wxDefaultSize, 0);
+    avoidTurboCheckbox = new wxCheckBox(p, wxID_ANY, _(""), wxPoint(256,328), wxDefaultSize, wxALIGN_RIGHT);
     avoidTurboCheckbox->SetValue(1);
 
     Connect(ID_BRUTETICSBOX, wxEVT_COMMAND_LISTBOX_SELECTED, wxCommandEventHandler(BruteDialog::OnBruteTicsBoxSelect));
@@ -283,7 +289,7 @@ BruteDialog::BruteDialog(wxWindow* parent,wxWindowID id,const wxPoint& pos,const
     xMomInput->ChangeValue("0");
     yMomInput->ChangeValue("0");
     speedInput->ChangeValue("0");
-    linedefInput->ChangeValue("0");
+    //linedefInput->ChangeValue("0");
 }
 
 BruteDialog::~BruteDialog() {}
@@ -560,34 +566,41 @@ void BruteDialog::OnTurnAngleButtonClick(wxCommandEvent& event) {
 }
 
 void BruteDialog::OnAddButtonClick(wxCommandEvent& event) {
-    /* ORIGINAL CODE FROM XDRE 2.22
-    items.push_back({});
-    int last = items.size() - 1;
-    bruteTicsBox->Append(items.at(last).ticStr);
-    bruteTicsBox->SetSelection(last);
-    items.at(last).ticStr = wxString::Format(wxT("%i"), xdre::getCurrentTic());
-    bruteTicsBox->SetString(last, items.at(last).ticStr);
-    EnableStuff();
-    ShowData(last); */
+    //m_mainWindow = mainWindow;
+            if (m_mainWindow->MenuItem12->IsChecked()) {
+                items.push_back({});
+                bruteTicsBox->Append(items.at(items.size()-1).ticStr);
+                bruteTicsBox->SetSelection(items.size()-1);
 
-    items.push_back({});
-    bruteTicsBox->Append(items.at(items.size()-1).ticStr);
-    bruteTicsBox->SetSelection(items.size()-1);
+                /* This creates a list with higher values at the top. Code below creates a list with higher values at bottom.
+                for(int i=0; i<(bruteTicsBox->GetCount()); i++) {
+                    items.at(i).ticStr = wxString::Format(wxT("%i"), xdre::getCurrentTic()-i);
+                    bruteTicsBox->SetString(i, items.at(i).ticStr);
+                } */ 
 
-    /* This creates a list with higher values at the top. Code below creates a list with higher values at bottom.
-    for(int i=0; i<(bruteTicsBox->GetCount()); i++) {
-        items.at(i).ticStr = wxString::Format(wxT("%i"), xdre::getCurrentTic()-i);
-        bruteTicsBox->SetString(i, items.at(i).ticStr);
-    } */ 
+                for(int i=bruteTicsBox->GetCount()-1; i>=0; i--) {
+                    items.at(i).ticStr = wxString::Format(wxT("%i"), xdre::getCurrentTic()-bruteTicsBox->GetCount()+i+1);
+                    bruteTicsBox->SetString(i, items.at(i).ticStr);
+                }   
+                EnableStuff();
+                ShowData(items.size()-1);
+            }
 
-    for(int i=bruteTicsBox->GetCount()-1; i>=0; i--) {
-        items.at(i).ticStr = wxString::Format(wxT("%i"), xdre::getCurrentTic()-bruteTicsBox->GetCount()+i+1);
-        bruteTicsBox->SetString(i, items.at(i).ticStr);
-    }   
-    EnableStuff();
-    ShowData(items.size()-1);
+            else {
+                //ORIGINAL CODE FROM XDRE 2.22
+                items.push_back({});
+                int last = items.size() - 1;
+                bruteTicsBox->Append(items.at(last).ticStr);
+                bruteTicsBox->SetSelection(last);
+                items.at(last).ticStr = wxString::Format(wxT("%i"), xdre::getCurrentTic());
+                bruteTicsBox->SetString(last, items.at(last).ticStr);
+                EnableStuff();
+                ShowData(last);
+            }
+
+
 }
-
+    
 
 void BruteDialog::OnAutoRange(wxCommandEvent& event) {
     if(bruteTicsBox->GetCount() < 1) return;
@@ -824,7 +837,7 @@ void BruteDialog::OnBruteHelp(wxCommandEvent& event) {
         "   - If the 'Avoid Turbo' button is checked, the range will be 44:50, 44:50, -4:4.\n\n"
         "Currently a little bugged - bottom tic in list must be selected when clicking the Auto Range button, "
         "& it wont properly work if the tic list isn't in order. For example, trying to set an auto range for 2, "
-        "4 & 5 will create an auto range based on existing inputs on 3, 4 & 5.",
+        "4 & 5 will create an auto range based on existing inputs on 3, 4 & 5. (almostmatt1)",
         "Brute Force Help",
         wxOK|wxICON_INFORMATION, this);
 }

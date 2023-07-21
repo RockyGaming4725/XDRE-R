@@ -49,11 +49,14 @@
 #include <wx/dialog.h>
 #include <wx/thread.h>
 #include "xdre.hpp"
+#include "MainWindow.hpp"
 
 //Maybe?
 #include <wx/fileconf.h>
 
 wxDECLARE_EVENT(EVT_BRUTE_DONE, wxThreadEvent);
+
+class mainWindow;
 
 class BruteDialog: public wxDialog, public wxThreadHelper {
 
@@ -65,7 +68,7 @@ class BruteDialog: public wxDialog, public wxThreadHelper {
 #endif // _WIN32
 
     public:
-        BruteDialog(wxWindow* parent,wxWindowID id=wxID_ANY,const wxPoint& pos=wxDefaultPosition,const wxSize& size=wxDefaultSize);
+        BruteDialog(MainWindow* mainWindow, wxWindow* parent,wxWindowID id=wxID_ANY,const wxPoint& pos=wxDefaultPosition,const wxSize& size=wxDefaultSize);
         virtual ~BruteDialog();
 
         wxPanel* p;
@@ -75,7 +78,7 @@ class BruteDialog: public wxDialog, public wxThreadHelper {
         wxTextCtrl *rngInput, *damageInput, *xPosInput, *yPosInput, *zPosInput, *xMomInput, *yMomInput, *speedInput, *runCmdInput, *strafeCmdInput, *turnCmdInput, *bruteTicInput, *checkTicInput, *linedefInput;
         wxButton *start, *cancel, *addButton, *removeButton, *turnAngleButton, *help, *autoBruteRange;
         wxRadioBox *fireRadioBox, *useRadioBox;
-        wxStaticBox *StaticBox1, *StaticBox2;
+        wxStaticBox *StaticBox1, *StaticBox2, *StaticBox3;
         wxListBox* bruteTicsBox;
 
         void OnBruteDone(wxThreadEvent& event);
@@ -97,11 +100,13 @@ ID_ADDBUTTON, ID_REMOVEBUTTON, ID_BRUTEHELP, ID_AUTOBRUTERANGE;
             int turnOrAngle {0};
         };
 
+        MainWindow* m_mainWindow;
         std::vector<ListItem> items;
         std::vector<BruteTic> bruteTics;
         BruteCheck bruteCheck;
         bool abortBrute {false};
         bool bruteSuccess {false};
+
         //Matt: Changed from wxString turnAngleTexts[2] {"Turn cmds", "Angles"};
         //I think this means shorttics and longtics?
         wxString turnAngleTexts[2] {"Short", "Long"};

@@ -43,11 +43,13 @@
 #include <wx/filedlg.h>
 #include <wx/ffile.h>
 #include <wx/tokenzr.h>
+#include <vector>
 #include "BruteDialog.hpp"
 #include "HeaderDialog.hpp"
 #include "KeysDialog.hpp"
 #include "xdre.hpp"
 #include "config.h"
+
 
 //for wxSscanf()
 #include <wx/crt.h>
@@ -55,6 +57,7 @@
 //for SDL_SetWindowPosition()
 #include "SDL.h"
 extern SDL_Window *sdl_window;
+
 
 const long MainWindow::ID_INPUTFIELD = wxNewId();
 const long MainWindow::ID_LINEDEFCONTROL = wxNewId();
@@ -74,6 +77,10 @@ const long MainWindow::IDM_PALSTUFF = wxNewId();
 const long MainWindow::IDM_SETKEYS = wxNewId();
 const long MainWindow::IDM_HEADER = wxNewId();
 const long MainWindow::IDM_CLEARTRACES = wxNewId();
+const long MainWindow::IDM_PUSHBACKTICS = wxNewId();
+const long MainWindow::IDM_THINGTRACKING = wxNewId();
+const long MainWindow::IDM_LINETRACKING = wxNewId();
+const long MainWindow::IDM_SECTORTRACKING = wxNewId();
 
 BEGIN_EVENT_TABLE(MainWindow, wxFrame)
 END_EVENT_TABLE()
@@ -82,7 +89,7 @@ MainWindow::MainWindow(wxWindow* parent, wxWindowID id, wxPoint const& pos, wxSi
     SetKeys();
 
     Create(parent, id, PACKAGE_STRING, wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE);
-    SetClientSize(wxSize(640,520));
+    SetClientSize(wxSize(640,-1));
     int x, y;
     //"-1,-1" is wxDefaultPosition
     wxSscanf(config.Read("WindowPos", "-1,-1"), "%d,%d", &x, &y);
@@ -102,7 +109,7 @@ MainWindow::MainWindow(wxWindow* parent, wxWindowID id, wxPoint const& pos, wxSi
     str.Clear();
 
     SetMinSize(wxSize(640,520));
-    SetMaxSize(wxSize(640,520));
+    SetMaxSize(wxSize(640,-1));
     p = new wxPanel(this);
     StaticText1  = new wxStaticText(p, wxID_ANY, _("(P)RNG index"), wxPoint(476,44));
     StaticText2  = new wxStaticText(p, wxID_ANY, _("Input"), wxPoint(526,12));
@@ -118,12 +125,12 @@ MainWindow::MainWindow(wxWindow* parent, wxWindowID id, wxPoint const& pos, wxSi
     StaticText5  = new wxStaticText(p, wxID_ANY, _("X mom."), wxPoint(236,140));
     StaticText6  = new wxStaticText(p, wxID_ANY, _("Y mom."), wxPoint(380,140));
 
-    StaticText7  = new wxStaticText(p, wxID_ANY, _("Distance moved"), wxPoint(424,172));
-    StaticText8  = new wxStaticText(p, wxID_ANY, _("Direction moved"),wxPoint(424,204));
+    StaticText7  = new wxStaticText(p, wxID_ANY, _("Distance moved"), wxPoint(444,172));
+    StaticText8  = new wxStaticText(p, wxID_ANY, _("Direction moved"),wxPoint(444,204));
     StaticText9  = new wxStaticText(p, wxID_ANY, _("Angle"), wxPoint(496,236));
 
     StaticText10 = new wxStaticText(p, wxID_ANY, _("Linedef"), wxPoint(472,300));
-    StaticText11 = new wxStaticText(p, wxID_ANY, _("Hit special"), wxPoint(508,332));
+    StaticText11 = new wxStaticText(p, wxID_ANY, _("Hit special"), wxPoint(502,332));
     StaticText12 = new wxStaticText(p, wxID_ANY, _("X"), wxPoint(528,352));
     StaticText13 = new wxStaticText(p, wxID_ANY, _("Y"), wxPoint(584,352));
     StaticText14 = new wxStaticText(p, wxID_ANY, _("V. 1"), wxPoint(480,372));
@@ -136,10 +143,10 @@ MainWindow::MainWindow(wxWindow* parent, wxWindowID id, wxPoint const& pos, wxSi
     StaticText20 = new wxStaticText(p, wxID_ANY, _("Time"), wxPoint(224,428));
     StaticText21 = new wxStaticText(p, wxID_ANY, _("Savepoint"), wxPoint(68,396));
 
-    StaticText26 = new wxStaticText(p, wxID_ANY, _("Sector"), wxPoint(384,324));
-    StaticText27 = new wxStaticText(p, wxID_ANY, _("Floor"), wxPoint(384,348));
-    StaticText28 = new wxStaticText(p, wxID_ANY, _("Ceiling"), wxPoint(384,372));
-    StaticText29 = new wxStaticText(p, wxID_ANY, _("Effect"), wxPoint(384,396));
+    StaticText26 = new wxStaticText(p, wxID_ANY, _("Sector"), wxPoint(372,324));
+    StaticText27 = new wxStaticText(p, wxID_ANY, _("Floor"), wxPoint(372,348));
+    StaticText28 = new wxStaticText(p, wxID_ANY, _("Ceiling"), wxPoint(372,372));
+    StaticText29 = new wxStaticText(p, wxID_ANY, _("Effect"), wxPoint(372,396));
 
     StaticText30 = new wxStaticText(p, wxID_ANY, _("Thing"), wxPoint(188,168));
     StaticText31 = new wxStaticText(p, wxID_ANY, _("X"), wxPoint(188,192));
@@ -184,7 +191,7 @@ MainWindow::MainWindow(wxWindow* parent, wxWindowID id, wxPoint const& pos, wxSi
     while(tok.HasMoreTokens()) linedefInputField->Append(tok.GetNextToken());
 
     linedefInputField->SetSelection(0);
-    linedefAdd       = new wxButton(p, ID_LINEADD, _("Add"), wxPoint(588,296), wxSize(26,21), 0);
+    linedefAdd       = new wxButton(p, ID_LINEADD, _("Add"), wxPoint(585,296), wxSize(26,21), 0);
     crossed          = new wxTextCtrl(p, wxID_ANY, _("false"), wxPoint(560,328), wxSize(52,21), wxTE_READONLY|wxTE_RIGHT);
     linedefXV1       = new wxTextCtrl(p, wxID_ANY, _("0"), wxPoint(504,368), wxSize(52,21), wxTE_READONLY|wxTE_RIGHT);
     linedefYV1       = new wxTextCtrl(p, wxID_ANY, _("0"), wxPoint(560,368), wxSize(52,21), wxTE_READONLY|wxTE_RIGHT);
@@ -192,17 +199,17 @@ MainWindow::MainWindow(wxWindow* parent, wxWindowID id, wxPoint const& pos, wxSi
     linedefYV2       = new wxTextCtrl(p, wxID_ANY, _("0"), wxPoint(560,392), wxSize(52,21), wxTE_READONLY|wxTE_RIGHT);
     distanceFromLine = new wxTextCtrl(p, wxID_ANY, _("0"), wxPoint(528,424), wxSize(84,21), wxTE_READONLY|wxTE_RIGHT);
 
-    sectorInputField = new wxComboBox(p, ID_SECTORCONTROL, wxEmptyString, wxPoint(416,320), wxSize(60,21), 0, 0, 0, wxIntegerValidator<unsigned int>());
+    sectorInputField = new wxComboBox(p, ID_SECTORCONTROL, wxEmptyString, wxPoint(410,320), wxSize(53,21), 0, 0, 0, wxIntegerValidator<unsigned int>());
     sectorInputField->SetMaxLength(10);
 
     tok.SetString(config.Read("SectorNums", "0"), ",");
     while(tok.HasMoreTokens()) sectorInputField->Append(tok.GetNextToken());
 
     sectorInputField->SetSelection(0);
-    sectorAdd     = new wxButton(p, ID_SECTORADD, _("Add"), wxPoint(476,320), wxSize(26,21), 0);
-    floorheight   = new wxTextCtrl(p, wxID_ANY, _("0"), wxPoint(420,344), wxSize(52,21), wxTE_READONLY|wxTE_RIGHT);
-    ceilingheight = new wxTextCtrl(p, wxID_ANY, _("0"), wxPoint(420,368), wxSize(52,21), wxTE_READONLY|wxTE_RIGHT);
-    special       = new wxTextCtrl(p, wxID_ANY, _("0"), wxPoint(420,392), wxSize(52,21), wxTE_READONLY|wxTE_RIGHT);
+    sectorAdd     = new wxButton(p, ID_SECTORADD, _("Add"), wxPoint(465,318), wxSize(26,21), 0);
+    floorheight   = new wxTextCtrl(p, wxID_ANY, _("0"), wxPoint(410,344), wxSize(52,21), wxTE_READONLY|wxTE_RIGHT);
+    ceilingheight = new wxTextCtrl(p, wxID_ANY, _("0"), wxPoint(410,368), wxSize(52,21), wxTE_READONLY|wxTE_RIGHT);
+    special       = new wxTextCtrl(p, wxID_ANY, _("0"), wxPoint(410,392), wxSize(52,21), wxTE_READONLY|wxTE_RIGHT);
 
     thingInputField = new wxComboBox(p, ID_THINGCONTROL, wxEmptyString, wxPoint(232,164), wxSize(60,21), 0, 0, 0, wxIntegerValidator<unsigned int>());
     thingInputField->SetMaxLength(10);
@@ -245,12 +252,18 @@ MainWindow::MainWindow(wxWindow* parent, wxWindowID id, wxPoint const& pos, wxSi
     menuOptions = new wxMenu();
     MenuItem7 = new wxMenuItem(menuOptions, IDM_PALSTUFF, _("Palette stuff"), wxEmptyString, wxITEM_CHECK);
     MenuItem8 = new wxMenuItem(menuOptions, IDM_CLEARTRACES, _("Clear all traces"), wxEmptyString, wxITEM_NORMAL);
+    MenuItem12 = new wxMenuItem(menuOptions, IDM_PUSHBACKTICS, _("Push back brute force tics"), wxEmptyString, wxITEM_CHECK);
+    menuTracking = new wxMenu();
+    MenuItem9 = new wxMenuItem(menuTracking, IDM_THINGTRACKING, _("Show thing tracking"), wxEmptyString, wxITEM_CHECK);
+    MenuItem10 = new wxMenuItem(menuTracking, IDM_LINETRACKING, _("Show line tracking"), wxEmptyString, wxITEM_CHECK);
+    MenuItem11 = new wxMenuItem(menuTracking, IDM_SECTORTRACKING, _("Show sector tracking"), wxEmptyString, wxITEM_CHECK);
     menuDemo  = new wxMenu();
     SetMenuBar(menuBar);
 
     menuBar->Append(menuFile, _("File"));
     menuBar->Append(menuTools, _("Tools"));
     menuBar->Append(menuOptions, _("Options"));
+    menuBar->Append(menuTracking, _("Tracking"));
 
     menuFile->Append(MenuItem1);
     menuFile->Append(MenuItem2);
@@ -258,10 +271,18 @@ MainWindow::MainWindow(wxWindow* parent, wxWindowID id, wxPoint const& pos, wxSi
     menuTools->Append(MenuItem4);
     menuTools->Append(MenuItem6);
     menuOptions->Append(MenuItem5);
-    menuOptions->Append(MenuItem7);
     menuOptions->Append(MenuItem8);
+    menuOptions->Append(MenuItem7);
+    menuOptions->Append(MenuItem12);
+    menuTracking->Append(MenuItem9);
+    menuTracking->Append(MenuItem10);
+    menuTracking->Append(MenuItem11);
 
-    MenuItem7->Check(true);
+    MenuItem7->Check(returnTrackVal("EnablePalette", config));
+    MenuItem9->Check(returnTrackVal("ThingTracking", config));
+    MenuItem10->Check(returnTrackVal("LineTracking", config));
+    MenuItem11->Check(returnTrackVal("SectorTracking", config));
+    MenuItem12->Check(returnTrackVal("PushBackTics", config));
 
     Connect(ID_INPUTFIELD, wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler(MainWindow::OnInputFieldText));
 
@@ -288,6 +309,10 @@ MainWindow::MainWindow(wxWindow* parent, wxWindowID id, wxPoint const& pos, wxSi
     Connect(IDM_PALSTUFF, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainWindow::OnMenuPalStuff));
     Connect(IDM_HEADER, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainWindow::OnMenuHeader));
     Connect(IDM_CLEARTRACES, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainWindow::OnMenuClearTraces));
+    Connect(IDM_PUSHBACKTICS, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainWindow::OnMenuPushTics));
+    Connect(IDM_THINGTRACKING, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainWindow::OnMenuThingTracking));
+    Connect(IDM_LINETRACKING, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainWindow::OnMenuLineTracking));
+    Connect(IDM_SECTORTRACKING, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainWindow::OnMenuSectorTracking));
     Connect(wxID_ANY, wxEVT_CLOSE_WINDOW, wxCloseEventHandler(MainWindow::OnClose));
     Connect(wxID_ANY, wxEVT_IDLE, wxCommandEventHandler(MainWindow::OnIdle));
 
@@ -296,6 +321,54 @@ MainWindow::MainWindow(wxWindow* parent, wxWindowID id, wxPoint const& pos, wxSi
     linedefYV1->ChangeValue(wxString::FromCDouble(xdre::getLinedefVertex(0, 1), 0));
     linedefXV2->ChangeValue(wxString::FromCDouble(xdre::getLinedefVertex(1, 0), 0));
     linedefYV2->ChangeValue(wxString::FromCDouble(xdre::getLinedefVertex(1, 1), 0));
+
+//Create vectors of stuff for hiding/showing more efficiently
+    thingTracks.push_back(StaticText30);
+    thingTracks.push_back(StaticText31);
+    thingTracks.push_back(StaticText32);
+    thingTracks.push_back(StaticText33);
+    thingTracks.push_back(StaticText34);
+    thingTracks.push_back(StaticText35);
+    thingTracks.push_back(StaticText36);
+    thingTracks.push_back(StaticText37);
+    thingTracks.push_back(StaticText38);
+    thingTracks.push_back(thingInputField);
+    thingTracks.push_back(thingAdd);
+    thingTracks.push_back(thingX);
+    thingTracks.push_back(thingY);
+    thingTracks.push_back(thingZ);
+    thingTracks.push_back(thingRadius);
+    thingTracks.push_back(thingTics);
+    thingTracks.push_back(thingHealth);
+    thingTracks.push_back(thingReactionTime);
+    thingTracks.push_back(thingThreshold);
+
+    lineTracks.push_back(StaticText10);
+    lineTracks.push_back(StaticText11);
+    lineTracks.push_back(StaticText12);
+    lineTracks.push_back(StaticText13);
+    lineTracks.push_back(StaticText14);
+    lineTracks.push_back(StaticText15);
+    lineTracks.push_back(StaticText16);
+    lineTracks.push_back(linedefInputField);
+    lineTracks.push_back(linedefAdd);
+    lineTracks.push_back(crossed);
+    lineTracks.push_back(linedefXV1);
+    lineTracks.push_back(linedefXV2);
+    lineTracks.push_back(linedefYV1);
+    lineTracks.push_back(linedefYV2);
+    lineTracks.push_back(distanceFromLine);
+
+    sectorTracks.push_back(StaticText26);
+    sectorTracks.push_back(StaticText27);
+    sectorTracks.push_back(StaticText28);
+    sectorTracks.push_back(StaticText29);
+    sectorTracks.push_back(sectorInputField);
+    sectorTracks.push_back(sectorAdd);
+    sectorTracks.push_back(floorheight);
+    sectorTracks.push_back(ceilingheight);
+    sectorTracks.push_back(special);
+
     RS();
 }
 
@@ -558,6 +631,12 @@ void MainWindow::WriteConfig() {
     if(s.IsEmpty()) s = "0";
     config.Write("ThingNums", s);
     s.Clear();
+
+    config.Write("ThingTracking", wxString::Format("%s", MenuItem9->IsChecked() ? "true" : "false"));
+    config.Write("LineTracking", wxString::Format("%s", MenuItem10->IsChecked() ? "true" : "false"));
+    config.Write("SectorTracking", wxString::Format("%s", MenuItem11->IsChecked() ? "true" : "false"));
+    config.Write("PushBackTics", wxString::Format("%s", MenuItem12->IsChecked() ? "true" : "false"));
+    config.Write("EnablePalette", wxString::Format("%s", MenuItem7->IsChecked() ? "true" : "false"));
 }
 
 void MainWindow::OnIdle(wxCommandEvent& event) {xdre::doSdlEvents();}
@@ -668,7 +747,7 @@ void MainWindow::OnMenuLoad(wxCommandEvent& event) {Load();}
 void MainWindow::OnMenuSave(wxCommandEvent& event) {Save();}
 
 void MainWindow::OnMenuBrute(wxCommandEvent& event) {
-    BruteDialog bruteDialog(this);
+    BruteDialog bruteDialog(this, NULL);
     bruteDialog.ShowModal();
     RS();
 }
@@ -687,6 +766,14 @@ void MainWindow::OnMenuClearTraces(wxCommandEvent& event) {
     linedefInputField->Clear();
     sectorInputField->Clear();
     thingInputField->Clear();
+    linedefInputField->Append("0");
+    sectorInputField->Append("0");
+    thingInputField->Append("0");
+
+//Once cleared, add defaults
+    linedefInputField->SetSelection(0);
+    sectorInputField->SetSelection(0);
+    thingInputField->SetSelection(0);
 }
 
 void MainWindow::OnStyleChoiceSelect(wxCommandEvent& event) {
@@ -694,3 +781,50 @@ void MainWindow::OnStyleChoiceSelect(wxCommandEvent& event) {
     RS();
 }
 
+void MainWindow::OnMenuThingTracking(wxCommandEvent& event) {
+    if (event.IsChecked()) {
+            for (wxWindow* widget : thingTracks) {
+            widget->Show();
+            }
+    }
+
+    else {
+        for (wxWindow* widget : thingTracks) {
+            widget->Hide();
+            }
+    }   
+}
+
+void MainWindow::OnMenuLineTracking(wxCommandEvent& event) {
+    if (event.IsChecked()) {
+            for (wxWindow* widget : lineTracks) {
+            widget->Show();
+            }
+    }
+
+    else {
+        for (wxWindow* widget : lineTracks) {
+            widget->Hide();
+            }
+    }
+
+}
+
+void MainWindow::OnMenuSectorTracking(wxCommandEvent& event) {
+    if (event.IsChecked()) {
+            for (wxWindow* widget : sectorTracks) {
+            widget->Show();
+            }
+    }
+
+    else {
+        for (wxWindow* widget : sectorTracks) {
+            widget->Hide();
+            }
+    }
+
+}
+
+void MainWindow::OnMenuPushTics(wxCommandEvent& event) {
+    pushBackTics = MenuItem12->IsChecked();
+}

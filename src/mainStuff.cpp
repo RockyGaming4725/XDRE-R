@@ -25,8 +25,6 @@
 #include <wx/app.h>
 #include "MainWindow.hpp"
 
-class MainWindow;
-
 class GuiWx : public wxApp {
 public:
     virtual bool OnInit();

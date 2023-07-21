@@ -108,16 +108,16 @@ public:
     wxTextCtrl *xPos, *yPos, *zPos, *xDist, *yDist, *zDist, *xMom, *yMom, *rngIndex, *useSuccess, *inputField, *playerAngle, *savepointTic, *distanceMoved, *directionMoved, *linedefXV1,
 *linedefYV1, *linedefXV2, *linedefYV2, *crossed, *distanceFromLine, *floorheight, *ceilingheight, *special, *damageDone, *time, *currentTic, *thingX, *thingY, *thingZ, *thingRadius, *thingTics,
 *thingHealth, *thingReactionTime, *thingThreshold;
-    wxMenu *menuFile, *menuDemo, *menuTools, *menuOptions;
+    wxMenu *menuFile, *menuDemo, *menuTools, *menuOptions, *menuTracking;
     wxChoice *AngleType, *styleChoice;
     wxButton *linedefAdd, *sectorAdd, *thingAdd;
     wxComboBox *linedefInputField, *sectorInputField, *thingInputField;
     TiclistCtrl *ticlist;
-    wxMenuItem *MenuItem1, *MenuItem2, *MenuItem3, *MenuItem4, *MenuItem5, *MenuItem6, *MenuItem7, *MenuItem8, *MenuItem9, *MenuItem10;
+    wxMenuItem *MenuItem1, *MenuItem2, *MenuItem3, *MenuItem4, *MenuItem5, *MenuItem6, *MenuItem7, *MenuItem8, *MenuItem9, *MenuItem10, *MenuItem11, *MenuItem12;
     wxMenuBar *menuBar;
 protected:
     static const long ID_INPUTFIELD, ID_LINEDEFCONTROL, ID_LINEADD, ID_SECTORCONTROL, ID_SECTORADD, ID_THINGCONTROL, ID_THINGADD, ID_STYLECHOICE, ID_ANGLETYPE, IDM_LOAD, IDM_SAVE, IDM_EXIT,
-IDM_BRUTE, IDM_PALSTUFF, IDM_SETKEYS, IDM_HEADER, IDM_CLEARTRACES;
+IDM_BRUTE, IDM_PALSTUFF, IDM_SETKEYS, IDM_HEADER, IDM_CLEARTRACES, IDM_PUSHBACKTICS, IDM_THINGTRACKING, IDM_LINETRACKING,IDM_SECTORTRACKING;
 private:
     void DoInput(XCmd cmd, unsigned int val = 0);
     void RefreshStuff();
@@ -129,6 +129,13 @@ private:
 
     wxStringToStringHashMap configToStringMap {}; // config -> textCommand
     StringToCommandMap stringToCommandMap {}; // textCommand -> XCmd
+
+    std::vector<wxWindow*> thingTracks;
+    std::vector<wxWindow*> lineTracks;
+    std::vector<wxWindow*> sectorTracks;
+    bool pushBackTics;
+    //variable for "STRING" in returnTrackVal("STRING")
+    std::string check_type;
 
     void OnIdle(wxCommandEvent& event);
     void OnClose(wxCloseEvent& event);
@@ -149,6 +156,17 @@ private:
     void OnMenuHeader(wxCommandEvent& event);
     void OnMenuClearTraces(wxCommandEvent& event);
     void OnStyleChoiceSelect(wxCommandEvent& event);
+    void OnMenuPushTics(wxCommandEvent& event);
+    void OnMenuThingTracking(wxCommandEvent& event);
+    void OnMenuLineTracking(wxCommandEvent& event);
+    void OnMenuSectorTracking(wxCommandEvent& event);
+    //must be defined here, too lazy
+    bool returnTrackVal(const std::string& check_type, wxFileConfig& config) {
+    wxString value = config.Read((check_type), "true");
+    if (value == "true") {return true;}
+    if (value == "false") {return false;}
+    else {return true;}
+}
 
     DECLARE_EVENT_TABLE()
 };

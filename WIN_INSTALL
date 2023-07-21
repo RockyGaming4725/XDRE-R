@@ -1,0 +1,25 @@
+- Download & install Msys2. 
+- After installing, run: pacman -Syu
+- Close the application, then re-open it, and again run: pacman -Syu
+- Run: pacman -S --needed base-devel mingw-w64-x86_64-toolchain git
+- Close application, *make sure to do the rest in MSYS2 MinGW x64*
+
+- Retrieve wxWidgets source code from https://www.wxwidgets.org/downloads/
+- Unpack and navigate to that directory in MSYS2.
+- Run: mkdir gtk-build && cd gtk-build
+- Run: ../configure
+- Run: make -j4 (note that here you can replace the number with however many processor threads your computer has)
+- Run: make install (note that https://wiki.wxwidgets.org/Compiling_and_getting_started says to use sudo, but sudo isn't necessary in MSYS2, only in a Linux setting)
+- Run: ldconfig
+
+- Run: pacman -S msys/libtool msys/autoconf msys/automake-wrapper
+- Run: pacman -S mingw-w64-x86_64-SDL2
+
+- In Msys2, navigate to where you would like your XDRE source folder to be
+- Run: git clone https://github.com/RockyGaming4725/XDRE-R.git
+- Run: cd xdre-r
+- Run: ./bootstrap
+- Run: ./configure
+- Run: make -j4
+
+- Executable should now be located in src/xdre. To run it you'll need PrBoom-plus.wad and an iwad in the same folder as xdre.exe.

@@ -1,0 +1,13 @@
+- Make sure you have wxwidgets version >= 3.0.0 installed on your system.
+- Enter directory "xdre"
+- Run:
+	./bootstrap
+	./configure
+	make
+
+*note that here you can replace the number with however many processor threads
+your computer has*
+
+
+
+XDRE should now be located inside "src" directory. Move it to "xdre" directory.
