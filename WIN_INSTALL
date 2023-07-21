@@ -5,7 +5,7 @@
 - Close application, *make sure to do the rest in MSYS2 MinGW x64*
 
 - Retrieve wxWidgets source code from https://www.wxwidgets.org/downloads/
-- Unpack and navigate to that directory in MSYS2.
+- Unpack and navigate to that directory in Msys2.
 - Run: mkdir gtk-build && cd gtk-build
 - Run: ../configure
 - Run: make -j4 (note that here you can replace the number with however many processor threads your computer has)
