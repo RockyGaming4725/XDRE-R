@@ -369,6 +369,14 @@ MainWindow::MainWindow(wxWindow* parent, wxWindowID id, wxPoint const& pos, wxSi
     sectorTracks.push_back(ceilingheight);
     sectorTracks.push_back(special);
 
+    for (wxWindow* widget : thingTracks) {widget->Show(returnTrackVal("ThingTracking", config));}
+    for (wxWindow* widget : lineTracks) {widget->Show(returnTrackVal("LineTracking", config));}
+    for (wxWindow* widget : sectorTracks) {widget->Show(returnTrackVal("SectorTracking", config));}
+//we know if the menu is checked or not. XDRE always launches with palstuff on,
+//so turn it off if the menu isn't checked. Terrible approach, but it works.
+    if (!MenuItem7->IsChecked()) {xdre::toggleBlood();}
+
+
     RS();
 }
 
@@ -783,44 +791,32 @@ void MainWindow::OnStyleChoiceSelect(wxCommandEvent& event) {
 
 void MainWindow::OnMenuThingTracking(wxCommandEvent& event) {
     if (event.IsChecked()) {
-            for (wxWindow* widget : thingTracks) {
-            widget->Show();
-            }
+        ShowTrackWidgets(thingTracks);
     }
 
     else {
-        for (wxWindow* widget : thingTracks) {
-            widget->Hide();
-            }
+        HideTrackWidgets(thingTracks);
     }   
 }
 
 void MainWindow::OnMenuLineTracking(wxCommandEvent& event) {
     if (event.IsChecked()) {
-            for (wxWindow* widget : lineTracks) {
-            widget->Show();
-            }
+        ShowTrackWidgets(lineTracks);
     }
 
     else {
-        for (wxWindow* widget : lineTracks) {
-            widget->Hide();
-            }
+        HideTrackWidgets(lineTracks);
     }
 
 }
 
 void MainWindow::OnMenuSectorTracking(wxCommandEvent& event) {
     if (event.IsChecked()) {
-            for (wxWindow* widget : sectorTracks) {
-            widget->Show();
-            }
+            ShowTrackWidgets(sectorTracks);
     }
 
     else {
-        for (wxWindow* widget : sectorTracks) {
-            widget->Hide();
-            }
+        HideTrackWidgets(sectorTracks);
     }
 
 }

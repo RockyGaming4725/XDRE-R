@@ -167,6 +167,16 @@ private:
     if (value == "false") {return false;}
     else {return true;}
 }
+    void ShowTrackWidgets(std::vector <wxWindow*> track) {
+        for (wxWindow* widget : track) {
+            widget->Show();
+            }
+}
+    void HideTrackWidgets(std::vector <wxWindow*> track) {
+        for (wxWindow* widget : track) {
+            widget->Hide();
+            }
+}
 
     DECLARE_EVENT_TABLE()
 };

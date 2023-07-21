@@ -597,8 +597,6 @@ void BruteDialog::OnAddButtonClick(wxCommandEvent& event) {
                 EnableStuff();
                 ShowData(last);
             }
-
-
 }
     
 
