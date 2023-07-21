@@ -239,7 +239,7 @@ BruteDialog::BruteDialog(MainWindow* mainWindow, wxWindow* parent,wxWindowID id,
     start  = new wxButton(p, ID_START, _("Start"), wxPoint(190,360), wxDefaultSize, 0, wxDefaultValidator);
     help   = new wxButton(p, ID_BRUTEHELP, _("Help"), wxPoint(8,360), wxDefaultSize, 0, wxDefaultValidator);
     autoBruteRange = new wxButton(p, ID_AUTOBRUTERANGE, _("Auto Range"), wxPoint(280,360), wxDefaultSize, 0, wxDefaultValidator);
-    workingText = new wxStaticText(p, wxID_ANY, _("Working..."), wxPoint(278,284), wxDefaultSize, 0);
+    workingText = new wxStaticText(p, wxID_ANY, _("Working..."), wxPoint(263,258), wxDefaultSize, 0);
     workingText->Hide();
     StaticBox1 = new wxStaticBox(p, wxID_ANY, _("Tics to brute force"), wxPoint(8,0), wxSize(156,354), 0);
     StaticBox2 = new wxStaticBox(p, wxID_ANY, _("Checks"), wxPoint(172,6), wxSize(246,275), 0);
