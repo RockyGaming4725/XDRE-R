@@ -23,4 +23,4 @@
 [\*] Fixed some GUI misalignments.
 [\*] Fixed a bug where XDRE would launch with a larger window size than it should.
 [\*] "Clear all traces" puts default value of zero after usage, staying in  line
-      with xdre's default values when launched. 
+      with xdre's default values when launched.
