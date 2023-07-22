@@ -109,7 +109,7 @@ MainWindow::MainWindow(wxWindow* parent, wxWindowID id, wxPoint const& pos, wxSi
     str.Clear();
 
     SetMinSize(wxSize(640,520));
-    SetMaxSize(wxSize(640,-1));
+    SetMaxSize(wxSize(640,520));
     p = new wxPanel(this);
     StaticText1  = new wxStaticText(p, wxID_ANY, _("(P)RNG index"), wxPoint(476,44));
     StaticText2  = new wxStaticText(p, wxID_ANY, _("Input"), wxPoint(526,12));
