@@ -11,7 +11,7 @@
 [+] — added, [-] — removed, [\*] — fixed/changed.
 
 ### 2.23 (20.07.23)
-[+] Added autorange feature to brute force. (almostmatt1)\
+[+] Added autorange feature to brute force. (almostmatt1)
 [+] Added toggles for showing/hiding thing/linedef/sector tracking.
 [+] Palette stuff and tracking toggles are saved to config after quit.
 
