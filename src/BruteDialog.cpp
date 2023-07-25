@@ -252,8 +252,8 @@ BruteDialog::BruteDialog(MainWindow* mainWindow, wxWindow* parent,wxWindowID id,
     StaticText15 = new wxStaticText(p, wxID_ANY, _("Range size:"), wxPoint(180,300), wxDefaultSize, 0);
     rangeSizeChoice = new wxChoice(p, wxID_ANY, wxPoint(245,298), wxSize(50,21), 0, 0, 0);
     rangeSizeChoice->SetSelection(rangeSizeChoice->Append(_("1")));
-    rangeSizeChoice->Append(_("3"));
     rangeSizeChoice->Append(_("2"));
+    rangeSizeChoice->Append(_("3"));
     rangeSizeChoice->Append(_("4"));
     rangeSizeChoice->Append(_("5"));
     rangeSizeChoice->Append(_("Max"));
